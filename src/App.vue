@@ -24,18 +24,22 @@ async function generate() {
             "size": store.size,
             "prompt": prompt.value,
             "quality": store.quality,
-            "style":store.style
+            "style": store.style
         }
     })
     image.value = response.data.data[0].url;
-    session.value = image.value.substr(image.value.indexOf('/images/') + 8,36);
+    session.value = image.value.substr(image.value.indexOf('/images/') + 8, 36);
     alt.value = response.data.data[0].revised_prompt;
     store.count++;
+}
+const onCopy = e => {
+    alert("复制成功")
 }
 </script>
 
 <template>
     <div class="container">
+        <h1>Azure dalle-3 Generator</h1>
         <div class="row">
             <div class="col">
                 <div class="card">
@@ -84,16 +88,26 @@ async function generate() {
             </div>
             <div class="col">
                 <figure class="figure">
-                    <img :src="image" class="figure-img img-thumbnail" alt="...">
-                    <figcaption class="figure-caption">{{alt}}</figcaption>
+                    <img :src="image" style="width: 50%;" class="figure-img img-thumbnail" :alt="alt">
+                    <figcaption class="figure-caption">{{ alt }}</figcaption>
                 </figure>
-                <div class="mb-3">
-                    <label class="form-label">已生成 {{ store.count }} 张图片</label>
+                <div class="card">
+                    <div class="card-header">
+                        操作
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">已生成图片总量:
+                            <span class="badge bg-secondary"> {{ store.count }}</span>
+                        </li>
+                        <li class="list-group-item">会话 ID：<span class="badge bg-secondary"> {{ session ? session : "Azure 会话  ID，可用于回溯" }}</span></li>
+                        <li class="list-group-item">操作：
+                            <button type="button"  v-clipboard:copy="session" v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制会话 ID</button>
+                            <button type="button" v-clipboard:copy="prompt"  v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制原始 Prompt</button>
+                            <button type="button"  v-clipboard:copy="alt" v-clipboard:success="onCopy" class="btn btn-primary btn-sm">复制最终 Prompt</button>
+                        </li>
+                    </ul>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">会话 ID</label>
-                    <input type="text" :value="session" class="form-control" placeholder="">
-                </div>
+
             </div>
 
         </div>
