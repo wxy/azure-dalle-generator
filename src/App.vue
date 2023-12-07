@@ -6,6 +6,7 @@ import { ref } from 'vue'
 
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
 const alt = ref("A caption for the above image.");
+const prompt = ref("a tiger")
 async function generate() {
     let response = await axios({
         "method": "POST",
@@ -20,11 +21,14 @@ async function generate() {
         },
         "data": {
             "size": store.size,
-            "prompt": store.prompt
+            "prompt": prompt.value,
+            "quality": store.quality,
+            "style":store.style
         }
     })
     image.value = response.data.data[0].url;
     alt.value = response.data.data[0].revised_prompt;
+    store.count++;
 }
 </script>
 
@@ -34,7 +38,8 @@ async function generate() {
             <div class="col">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">配置生成图片</h5>
+                        <h5 class="card-title">配置生成图片  <small class="text-body-secondary">当前已生成 {{ store.count }} 张图片</small>
+</h5>
                         <div class="mb-3">
                             <label class="form-label">API Endpoint</label>
                             <input type="text" v-model="store.url" class="form-control" placeholder="API Endpoint">
@@ -47,13 +52,30 @@ async function generate() {
                             <label class="form-label">图片尺寸</label>
                             <select v-model="store.size" class="form-select" aria-label="Default select example">
                                 <option selected>选择尺寸</option>
-                                <option value="256x256">256x256</option>
                                 <option value="1024x1024">1024x1024</option>
+                                <option value="1024x1792">1024x1792</option>
+                                <option value="1792x1024">1792x1024</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">图片风格</label>
+                            <select v-model="store.style" class="form-select" aria-label="Default select example">
+                                <option selected>选择尺寸</option>
+                                <option value="natural">natural</option>
+                                <option value="vivid">vivid</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">图片质量</label>
+                            <select v-model="store.quality" class="form-select" aria-label="Default select example">
+                                <option selected>选择尺寸</option>
+                                <option value="standard">standard</option>
+                                <option value="hd">hd</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Prompt</label>
-                            <textarea class="form-control" v-model="store.prompt" rows="5"></textarea>
+                            <textarea class="form-control" v-model="prompt" rows="5"></textarea>
                         </div>
                         <button class="btn btn-primary" @click="generate">生成图片</button>
                     </div>

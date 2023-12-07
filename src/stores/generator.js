@@ -5,8 +5,10 @@ export const useGeneratorStore = defineStore('generator', {
         return {
             url: "",
             key: "",
-            prompt: "a tiger",
-            size: "1024x1024"
+            size: "1024x1024",
+            style: "natural",
+            quality:"standard",
+            count: 0,
         }
     },
     actions: {
