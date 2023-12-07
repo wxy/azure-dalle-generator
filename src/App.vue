@@ -6,6 +6,7 @@ import { ref } from 'vue'
 
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
 const alt = ref("A caption for the above image.");
+const session = ref("");
 const prompt = ref("a tiger")
 async function generate() {
     let response = await axios({
@@ -27,6 +28,7 @@ async function generate() {
         }
     })
     image.value = response.data.data[0].url;
+    session.value = image.value.substr(image.value.indexOf('/images/') + 8,36);
     alt.value = response.data.data[0].revised_prompt;
     store.count++;
 }
@@ -38,8 +40,7 @@ async function generate() {
             <div class="col">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">配置生成图片  <small class="text-body-secondary">当前已生成 {{ store.count }} 张图片</small>
-</h5>
+                        <h5 class="card-title">配置生成图片</h5>
                         <div class="mb-3">
                             <label class="form-label">API Endpoint</label>
                             <input type="text" v-model="store.url" class="form-control" placeholder="API Endpoint">
@@ -74,7 +75,7 @@ async function generate() {
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Prompt</label>
+                            <label class="form-label">提示词</label>
                             <textarea class="form-control" v-model="prompt" rows="5"></textarea>
                         </div>
                         <button class="btn btn-primary" @click="generate">生成图片</button>
@@ -86,6 +87,13 @@ async function generate() {
                     <img :src="image" class="figure-img img-thumbnail" alt="...">
                     <figcaption class="figure-caption">{{alt}}</figcaption>
                 </figure>
+                <div class="mb-3">
+                    <label class="form-label">已生成 {{ store.count }} 张图片</label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">会话 ID</label>
+                    <input type="text" :value="session" class="form-control" placeholder="">
+                </div>
             </div>
 
         </div>
