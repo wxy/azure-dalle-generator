@@ -60,7 +60,7 @@ async function generate() {
                         <div class="mb-3">
                             <label class="form-label">图片风格</label>
                             <select v-model="store.style" class="form-select" aria-label="Default select example">
-                                <option selected>选择尺寸</option>
+                                <option selected>选择风格</option>
                                 <option value="natural">natural</option>
                                 <option value="vivid">vivid</option>
                             </select>
@@ -68,7 +68,7 @@ async function generate() {
                         <div class="mb-3">
                             <label class="form-label">图片质量</label>
                             <select v-model="store.quality" class="form-select" aria-label="Default select example">
-                                <option selected>选择尺寸</option>
+                                <option selected>选择图片质量</option>
                                 <option value="standard">standard</option>
                                 <option value="hd">hd</option>
                             </select>
