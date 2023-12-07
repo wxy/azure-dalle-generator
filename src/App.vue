@@ -39,7 +39,7 @@ const onCopy = e => {
 
 <template>
     <div class="container">
-        <h1>Azure dalle-3 Generator</h1>
+        <h1 class="my-4">Azure dalle-3 Generator</h1>
         <div class="row">
             <div class="col">
                 <div class="card">
