@@ -79,7 +79,7 @@ async function generate() {
         },
         "data": {
             "size": store.size,
-            "prompt": prompt.value,
+            "prompt": prompt.value + ' 图片风格：' + store.design + ' 图片背景：' + store.background,
             "quality": store.quality,
             "style": store.style
         }
@@ -142,22 +142,45 @@ const onCopy = e => {
                         <div class="mb-3">
                             <label class="form-label">图片风格</label>
                             <select v-model="store.style" class="form-select" aria-label="Default select example">
-                                <option selected>选择风格</option>
-                                <option value="natural">natural</option>
-                                <option value="vivid">vivid</option>
+                                <option>选择风格</option>
+                                <option value="natural">正常</option>
+                                <option value="vivid" selected>生动</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">图片质量</label>
                             <select v-model="store.quality" class="form-select" aria-label="Default select example">
-                                <option selected>选择图片质量</option>
-                                <option value="standard">standard</option>
-                                <option value="hd">hd</option>
+                                <option>选择图片质量</option>
+                                <option value="standard">标准</option>
+                                <option value="hd" selected>高清</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">提示词</label>
+                            <label class="form-label">图片描述</label>
                             <textarea class="form-control" v-model="prompt" rows="5"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">图片样式</label>
+                            <textarea class="form-control" v-model="store.design" rows="1"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">图片背景</label><br />
+                            <input type="radio" name="background" id="background_-1" value="" class="m-2" v-model="store.background">
+                            <label class="form-label" for="background_-1">不指定</label>
+                            <input type="radio" name="background" id="background_1" value="红色" class="m-2" v-model="store.background">
+                            <label class="form-label" for="background_1">赤</label>
+                            <input type="radio" name="background" id="background_2" value="橙色" class="m-2" v-model="store.background">
+                            <label class="form-label" for="background_2">橙</label>
+                            <input type="radio" name="background" id="background_3" value="黄色" class="m-2" v-model="store.background">
+                            <label class="form-label" for="background_3">黄</label>
+                            <input type="radio" name="background" id="background_4" value="绿色" class="m-2" v-model="store.background">
+                            <label class="form-label" for="background_4">绿</label>
+                            <input type="radio" name="background" id="background_5" value="青色" class="m-2" v-model="store.background">
+                            <label class="form-label" for="background_5">青</label>
+                            <input type="radio" name="background" id="background_6" value="蓝色" class="m-2" v-model="store.background">
+                            <label class="form-label" for="background_6">蓝</label>
+                            <input type="radio" name="background" id="background_0" value="粉紫色" class="m-2" v-model="store.background">
+                            <label class="form-label" for="background_0">紫</label>
                         </div>
                         <button id="generateButton" class="btn btn-primary" @click="generate">{{ buttonLabel }}</button>
                     </div>
