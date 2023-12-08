@@ -2,8 +2,9 @@
 import { useGeneratorStore } from "./stores/generator";
 import axios from "axios";
 const store = useGeneratorStore();
-import { ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 
+const placeholderImage = ref("https://generated.vusercontent.net/placeholder.svg");
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
 const alt = ref("A caption for the above image.");
 const session = ref("");
@@ -11,18 +12,32 @@ const prompt = ref("Linux");
 
 // 初始状态下，按钮显示的文字为'生成图片'
 let buttonLabel = ref('生成图片');
-
 let buttonInterval = null;  // 创建一个变量来存储计时器ID
 let buttonDots = '';  // 创建一个变量来存储点
 
+// 图片生成进度
 let loadingInterval = null;  // 定义一个变量来存储计时器ID
 const loadingChars = ['↑', '↗', '→', '↘', '↓', '↙', '←', '↖'];  // 定义一组字符来展示滚动
 let index = 0;  // 定义一个索引用来跟踪当前显示的字符
 let progress = ""; // 定义一个字符串变量来储存进度点
 
-async function generate() {
-    buttonInterval = setInterval(() => {
+// 获取图片 DOM 元素的引用
+let imgElement = ref(null)
 
+onMounted(() => {
+    imgElement.value = document.querySelector('.figure-img');
+})
+// 图片加载完成的处理函数
+function handleImageLoad() {
+    // 移除淡入淡出效果
+    imgElement.value.classList.remove('img-fade');
+}
+
+async function generate() {
+    index = 0;
+    progress = "";
+    image.value = placeholderImage.value;
+    buttonInterval = setInterval(() => {
         // 更新显示的'•'数量
         buttonDots += '•';
         if(buttonDots.length > 3){
@@ -45,7 +60,6 @@ async function generate() {
         // 使用进度点和当前的旋转字符更新显示的字符串
         alt.value = '生成中 ' + progress + ' ' + loadingChars[index];
     }, 200);
-
 
     let response = await axios({
         "method": "POST",
@@ -70,8 +84,12 @@ async function generate() {
     buttonLabel.value = '生成图片';  // 取消加载状态并恢复原文字
     clearInterval(loadingInterval);
 
+    // 设置占位图片并添加淡入淡出效果
+    imgElement.value.classList.add('img-fade');
     image.value = response.data.data[0].url;
+
     session.value = image.value.substr(image.value.indexOf('/images/') + 8, 36);
+
     alt.value = response.data.data[0].revised_prompt;
     store.count++;
 }
@@ -87,7 +105,7 @@ const onCopy = e => {
             <div class="col">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">配置生成图片</h5>
+                        <h5 class="card-title">服务配置</h5>
                         <div class="mb-3">
                             <label class="form-label">API Endpoint</label>
                             <input type="text" v-model="store.url" class="form-control" placeholder="API Endpoint">
@@ -96,6 +114,11 @@ const onCopy = e => {
                             <label class="form-label">API Key</label>
                             <input type="text" v-model="store.key" class="form-control" placeholder="API Endpoint">
                         </div>
+                    </div>
+                </div>
+                <div class="card mt-1">
+                    <div class="card-body">
+                        <h5 class="card-title">图片配置</h5>
                         <div class="mb-3">
                             <label class="form-label">图片尺寸</label>
                             <select v-model="store.size" class="form-select" aria-label="Default select example">
@@ -128,13 +151,7 @@ const onCopy = e => {
                         <button id="generateButton" class="btn btn-primary" @click="generate">{{ buttonLabel }}</button>
                     </div>
                 </div>
-            </div>
-            <div class="col">
-                <figure class="figure">
-                    <img :src="image" style="width: 50%;" class="figure-img img-thumbnail" :alt="alt">
-                    <figcaption class="figure-caption">{{ alt }}</figcaption>
-                </figure>
-                <div class="card">
+                <div class="card mt-1">
                     <div class="card-header">
                         操作
                     </div>
@@ -143,15 +160,18 @@ const onCopy = e => {
                             <span class="badge bg-secondary">{{ store.count }}</span>
                         </li>
                         <li class="list-group-item">会话 ID：
-                            <span class="badge bg-secondary"> {{ session ? session : "Azure 会话 ID 可用于回溯" }}</span></li>
-                        <li class="list-group-item">操作：
-                            <button type="button" v-clipboard:copy="session" v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制会话 ID</button>
-                            <button type="button" v-clipboard:copy="prompt"  v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制原始提示词</button>
-                            <button type="button" v-clipboard:copy="alt" v-clipboard:success="onCopy" class="btn btn-primary btn-sm">复制最终提示词</button>
+                            <span class="badge bg-secondary"> {{ session ? session : "Azure 会话 ID 可用于回溯" }}</span>
+                            <button type="button" v-clipboard:copy="session" v-clipboard:success="onCopy" class="btn btn-primary btn-sm ms-3">复制</button>
                         </li>
                     </ul>
                 </div>
 
+            </div>
+            <div class="col">
+                <figure class="figure">
+                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' :alt="alt">
+                    <figcaption class="figure-caption">{{ alt }}</figcaption>
+                </figure>
             </div>
 
         </div>
@@ -165,5 +185,13 @@ const onCopy = e => {
     white-space: nowrap; 
     overflow: hidden; 
     text-align: left; 
+}
+@keyframes fadeInOut {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.img-fade {
+    animation: fadeInOut 2s infinite;
 }
 </style>
