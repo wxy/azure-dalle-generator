@@ -9,6 +9,7 @@ const image = ref("https://generated.vusercontent.net/placeholder.svg");
 const alt = ref("A caption for the above image.");
 const session = ref("");
 const prompt = ref("Linux");
+const pastImages = ref([]);
 
 // 初始状态下，按钮显示的文字为'生成图片'
 let buttonLabel = ref('生成图片');
@@ -45,7 +46,7 @@ async function generate() {
         }
 
         // 更新按钮的显示
-        buttonLabel.value = '生成图片' + buttonDots;
+        buttonLabel.value = '生成图片 ' + buttonDots;
     }, 200);
 
     alt.value = "生成中 " + loadingChars[index];  // 初始化加载信息
@@ -54,12 +55,16 @@ async function generate() {
         // 当完成一次完整的旋转后，我们添加一个 '•'
         if (index === loadingChars.length) {
             index = 0; // 重置旋转字符的索引
-            progress += '•' // 添加进度点
+            if (progress.length > 0 && progress.length % 10 === 9) {
+                progress += '+' // 添加进度点
+            } else {
+                progress += '•' // 添加进度点
+            }
         }
 
         // 使用进度点和当前的旋转字符更新显示的字符串
         alt.value = '生成中 ' + progress + ' ' + loadingChars[index];
-    }, 200);
+    }, 125);
 
     let response = await axios({
         "method": "POST",
@@ -91,6 +96,12 @@ async function generate() {
     session.value = image.value.substr(image.value.indexOf('/images/') + 8, 36);
 
     alt.value = response.data.data[0].revised_prompt;
+
+    pastImages.value.push({
+      url: image.value,
+      caption: alt.value
+    });
+
     store.count++;
 }
 const onCopy = e => {
@@ -99,8 +110,8 @@ const onCopy = e => {
 </script>
 
 <template>
-    <div class="container">
-        <h1 class="my-4">Azure dalle-3 Generator</h1>
+    <div class="container mb-3">
+        <h1 class="my-4">Azure DALL-E 3 图片生成器</h1>
         <div class="row">
             <div class="col">
                 <div class="card">
@@ -151,6 +162,16 @@ const onCopy = e => {
                         <button id="generateButton" class="btn btn-primary" @click="generate">{{ buttonLabel }}</button>
                     </div>
                 </div>
+            </div>
+            <div class="col">
+                <figure class="figure">
+                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' :alt="alt">
+                    <figcaption class="figure-caption">{{ alt }}</figcaption>
+                </figure>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
                 <div class="card mt-1">
                     <div class="card-header">
                         操作
@@ -165,15 +186,21 @@ const onCopy = e => {
                         </li>
                     </ul>
                 </div>
-
             </div>
             <div class="col">
-                <figure class="figure">
-                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' :alt="alt">
-                    <figcaption class="figure-caption">{{ alt }}</figcaption>
-                </figure>
+                <div class="card mt-1 image-history">
+                    <div class="card-header">
+                        历史生成的图片（{{ pastImages.length }}）
+                    </div>
+                    <div class="image-scroll-list p-3">
+                        <div v-for="(pastImage, index) in pastImages" :key="index" class="image-list-item">
+                            <a :href="pastImage.url" target="_blank">
+                                <img :src="pastImage.url" :alt="pastImage.caption" class="thumbnail">
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </div>
 
     </div>
@@ -193,5 +220,19 @@ const onCopy = e => {
 
 .img-fade {
     animation: fadeInOut 2s infinite;
+}
+.image-history {
+    margin-top: 20px;
+}
+.image-scroll-list {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.image-list-item {
+    display: inline-block;
+    margin-right: 10px;
+}
+.thumbnail {
+    width: 100px;
 }
 </style>
