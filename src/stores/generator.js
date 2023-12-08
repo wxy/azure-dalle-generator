@@ -6,8 +6,10 @@ export const useGeneratorStore = defineStore('generator', {
             url: "",
             key: "",
             size: "1024x1024",
-            style: "natural",
-            quality:"standard",
+            style: "vivid",
+            quality: "standard",
+            design: "",
+            background: -1,
             count: 0,
         }
     },
