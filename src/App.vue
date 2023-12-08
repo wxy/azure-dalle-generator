@@ -1,14 +1,52 @@
 <script setup>
-import { useGeneratorStore } from "./stores/generator"
-import axios from "axios"
+import { useGeneratorStore } from "./stores/generator";
+import axios from "axios";
 const store = useGeneratorStore();
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
 const alt = ref("A caption for the above image.");
 const session = ref("");
-const prompt = ref("a tiger")
+const prompt = ref("Linux");
+
+// 初始状态下，按钮显示的文字为'生成图片'
+let buttonLabel = ref('生成图片');
+
+let buttonInterval = null;  // 创建一个变量来存储计时器ID
+let buttonDots = '';  // 创建一个变量来存储点
+
+let loadingInterval = null;  // 定义一个变量来存储计时器ID
+const loadingChars = ['↑', '↗', '→', '↘', '↓', '↙', '←', '↖'];  // 定义一组字符来展示滚动
+let index = 0;  // 定义一个索引用来跟踪当前显示的字符
+let progress = ""; // 定义一个字符串变量来储存进度点
+
 async function generate() {
+    buttonInterval = setInterval(() => {
+
+        // 更新显示的'•'数量
+        buttonDots += '•';
+        if(buttonDots.length > 3){
+            buttonDots = '';
+        }
+
+        // 更新按钮的显示
+        buttonLabel.value = '生成图片' + buttonDots;
+    }, 200);
+
+    alt.value = "生成中 " + loadingChars[index];  // 初始化加载信息
+    loadingInterval = setInterval(() => {
+        index++;
+        // 当完成一次完整的旋转后，我们添加一个 '•'
+        if (index === loadingChars.length) {
+            index = 0; // 重置旋转字符的索引
+            progress += '•' // 添加进度点
+        }
+
+        // 使用进度点和当前的旋转字符更新显示的字符串
+        alt.value = '生成中 ' + progress + ' ' + loadingChars[index];
+    }, 200);
+
+
     let response = await axios({
         "method": "POST",
         "url": store.url,
@@ -27,6 +65,11 @@ async function generate() {
             "style": store.style
         }
     })
+    // 清除定时器
+    clearInterval(buttonInterval);  // 当请求完成时清除计时器
+    buttonLabel.value = '生成图片';  // 取消加载状态并恢复原文字
+    clearInterval(loadingInterval);
+
     image.value = response.data.data[0].url;
     session.value = image.value.substr(image.value.indexOf('/images/') + 8, 36);
     alt.value = response.data.data[0].revised_prompt;
@@ -82,7 +125,7 @@ const onCopy = e => {
                             <label class="form-label">提示词</label>
                             <textarea class="form-control" v-model="prompt" rows="5"></textarea>
                         </div>
-                        <button class="btn btn-primary" @click="generate">生成图片</button>
+                        <button id="generateButton" class="btn btn-primary" @click="generate">{{ buttonLabel }}</button>
                     </div>
                 </div>
             </div>
@@ -96,14 +139,15 @@ const onCopy = e => {
                         操作
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">已生成图片总量:
-                            <span class="badge bg-secondary"> {{ store.count }}</span>
+                        <li class="list-group-item">已生成图片总量：
+                            <span class="badge bg-secondary">{{ store.count }}</span>
                         </li>
-                        <li class="list-group-item">会话 ID：<span class="badge bg-secondary"> {{ session ? session : "Azure 会话  ID，可用于回溯" }}</span></li>
+                        <li class="list-group-item">会话 ID：
+                            <span class="badge bg-secondary"> {{ session ? session : "Azure 会话 ID 可用于回溯" }}</span></li>
                         <li class="list-group-item">操作：
-                            <button type="button"  v-clipboard:copy="session" v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制会话 ID</button>
-                            <button type="button" v-clipboard:copy="prompt"  v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制原始 Prompt</button>
-                            <button type="button"  v-clipboard:copy="alt" v-clipboard:success="onCopy" class="btn btn-primary btn-sm">复制最终 Prompt</button>
+                            <button type="button" v-clipboard:copy="session" v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制会话 ID</button>
+                            <button type="button" v-clipboard:copy="prompt"  v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制原始提示词</button>
+                            <button type="button" v-clipboard:copy="alt" v-clipboard:success="onCopy" class="btn btn-primary btn-sm">复制最终提示词</button>
                         </li>
                     </ul>
                 </div>
@@ -115,3 +159,11 @@ const onCopy = e => {
     </div>
 </template>
 
+<style scoped>
+#generateButton {
+    width: 200px;   
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-align: left; 
+}
+</style>
