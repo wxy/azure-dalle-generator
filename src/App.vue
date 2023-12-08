@@ -8,6 +8,9 @@ const image = ref("https://generated.vusercontent.net/placeholder.svg");
 const alt = ref("A caption for the above image.");
 const session = ref("");
 const prompt = ref("a tiger")
+
+let loadingInterval = null;  // 将此间隔定义到外部，以便在 generate 函数内和外部访问。
+
 async function generate() {
     // 清空figcaption的内容
     alt.value = "";
