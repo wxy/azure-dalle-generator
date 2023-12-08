@@ -9,6 +9,13 @@ const alt = ref("A caption for the above image.");
 const session = ref("");
 const prompt = ref("a tiger")
 async function generate() {
+    // 清空figcaption的内容
+    alt.value = "";
+    // 启动定时器，每秒在 figcaption 后增加一个 '.'
+    loadingInterval = setInterval(() => {
+        alt.value += ".";
+    }, 1000);
+
     let response = await axios({
         "method": "POST",
         "url": store.url,
@@ -27,6 +34,9 @@ async function generate() {
             "style": store.style
         }
     })
+    // 清除定时器
+    clearInterval(loadingInterval);
+
     image.value = response.data.data[0].url;
     session.value = image.value.substr(image.value.indexOf('/images/') + 8, 36);
     alt.value = response.data.data[0].revised_prompt;
@@ -88,7 +98,7 @@ const onCopy = e => {
             </div>
             <div class="col">
                 <figure class="figure">
-                    <img :src="image" style="width: 50%;" class="figure-img img-thumbnail" :alt="alt">
+                    <img :src="image" style="width: 50%;" class="figure-img img-thumbnail" :alt="...">
                     <figcaption class="figure-caption">{{ alt }}</figcaption>
                 </figure>
                 <div class="card">
@@ -101,9 +111,9 @@ const onCopy = e => {
                         </li>
                         <li class="list-group-item">会话 ID：<span class="badge bg-secondary"> {{ session ? session : "Azure 会话  ID，可用于回溯" }}</span></li>
                         <li class="list-group-item">操作：
-                            <button type="button"  v-clipboard:copy="session" v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制会话 ID</button>
-                            <button type="button" v-clipboard:copy="prompt"  v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制原始 Prompt</button>
-                            <button type="button"  v-clipboard:copy="alt" v-clipboard:success="onCopy" class="btn btn-primary btn-sm">复制最终 Prompt</button>
+                            <button type="button" v-clipboard:copy="session" v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制会话 ID</button>
+                            <button type="button" v-clipboard:copy="prompt"  v-clipboard:success="onCopy" class="btn btn-primary btn-sm me-2">复制原始提示词</button>
+                            <button type="button" v-clipboard:copy="alt" v-clipboard:success="onCopy" class="btn btn-primary btn-sm">复制最终提示词</button>
                         </li>
                     </ul>
                 </div>
