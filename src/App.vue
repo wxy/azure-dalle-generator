@@ -91,11 +91,12 @@ async function generate() {
     } catch (error) {
         if (axios.isAxiosError(error)) {
             const axiosError = error;
-            if (axiosError.response) {
-                alt.value = 'ERR : ' + axiosError.response.data.error.code + ' - ' + axiosError.response.data.error.message;
+            if (axiosError.response && axiosError.response.data.error) {
+                const { code, message } = axiosError.response.data.error;
+                alt.value = 'ERR : ' + code + ' - ' + message;
             }
         } else {
-            // 非axios的错误处理方式
+            // 非 axios 的错误处理方式
             alt.value = error.message;
         }
     }
