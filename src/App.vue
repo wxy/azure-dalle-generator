@@ -56,7 +56,7 @@ async function generate() {
         if (index === loadingChars.length) {
             index = 0; // 重置旋转字符的索引
             if (progress.length > 0 && progress.length % 10 === 9) {
-                progress += '+' // 添加进度点
+                progress += ' ' // 添加进度点
             } else {
                 progress += '•' // 添加进度点
             }
@@ -66,43 +66,59 @@ async function generate() {
         alt.value = '生成中 ' + progress + ' ' + loadingChars[index];
     }, 125);
 
-    let response = await axios({
-        "method": "POST",
-        "url": store.url,
-        "params": {
-            "api-version": "2023-12-01-preview"
-        },
-        "headers": {
-            "api-key": store.key,
-            "Authorization": `Bearer ${store.key}`,
-            "Content-Type": "application/json; charset=utf-8"
-        },
-        "data": {
-            "size": store.size,
-            "prompt": prompt.value + ' 图片风格：' + store.design + ' 图片背景：' + store.background,
-            "quality": store.quality,
-            "style": store.style
+    let response = null;
+    try {
+        response = await axios({
+            "method": "POST",
+            "url": store.url,
+            "params": {
+                "api-version": "2023-12-01-preview"
+            },
+            "headers": {
+                "api-key": store.key,
+                "Authorization": `Bearer ${store.key}`,
+                "Content-Type": "application/json; charset=utf-8"
+            },
+            "data": {
+                "size": store.size,
+                "prompt": prompt.value 
+                    + (store.design !=='' ? ' 图片风格：' + store.design : '') 
+                    + (store.background !== '' ? ' 图片背景：' + store.background : ''),
+                "quality": store.quality,
+                "style": store.style
+            }
+        })
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const axiosError = error;
+            if (axiosError.response) {
+                alt.value = 'ERR : ' + axiosError.response.data.error.code + ' - ' + axiosError.response.data.error.message;
+            }
+        } else {
+            // 非axios的错误处理方式
+            alt.value = error.message;
         }
-    })
+    }
     // 清除定时器
     clearInterval(buttonInterval);  // 当请求完成时清除计时器
     buttonLabel.value = '生成图片';  // 取消加载状态并恢复原文字
     clearInterval(loadingInterval);
 
-    // 设置占位图片并添加淡入淡出效果
-    imgElement.value.classList.add('img-fade');
-    image.value = response.data.data[0].url;
+    if (response !== null) {
+        // 设置占位图片并添加淡入淡出效果
+        imgElement.value.classList.add('img-fade');
+        image.value = response.data.data[0].url;
 
-    session.value = image.value.substr(image.value.indexOf('/images/') + 8, 36);
+        session.value = image.value.substr(image.value.indexOf('/images/') + 8, 36);
 
-    alt.value = response.data.data[0].revised_prompt;
+        alt.value = response.data.data[0].revised_prompt;
 
-    pastImages.value.push({
-      url: image.value,
-      caption: alt.value
-    });
-
-    store.count++;
+        pastImages.value.push({
+            url: image.value,
+            caption: alt.value
+        });
+        store.count++;
+    }
 }
 const onCopy = e => {
     alert("复制成功")
