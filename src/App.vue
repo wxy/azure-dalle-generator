@@ -11,11 +11,6 @@ const session = ref("");
 const prompt = ref("Linux");
 const pastImages = ref([]);
 
-// 初始状态下，按钮显示的文字为'生成图片'
-let buttonLabel = ref('生成图片');
-let buttonInterval = null;  // 创建一个变量来存储计时器ID
-let buttonDots = '';  // 创建一个变量来存储点
-
 // 图片生成进度
 let loadingInterval = null;  // 定义一个变量来存储计时器ID
 const loadingChars = ['↑', '↗', '→', '↘', '↓', '↙', '←', '↖'];  // 定义一组字符来展示滚动
@@ -23,11 +18,14 @@ let index = 0;  // 定义一个索引用来跟踪当前显示的字符
 let progress = ""; // 定义一个字符串变量来储存进度点
 
 // 获取图片 DOM 元素的引用
-let imgElement = ref(null)
+let imgElement = ref(null);
+let btnElement = ref(null);
 
 onMounted(() => {
     imgElement.value = document.querySelector('.figure-img');
+    btnElement.value = document.querySelector('#generateButton');
 })
+
 // 图片加载完成的处理函数
 function handleImageLoad() {
     // 移除淡入淡出效果
@@ -38,17 +36,8 @@ async function generate() {
     index = 0;
     progress = "";
     image.value = placeholderImage.value;
-    buttonInterval = setInterval(() => {
-        // 更新显示的'•'数量
-        buttonDots += '•';
-        if(buttonDots.length > 3){
-            buttonDots = '';
-        }
-
-        // 更新按钮的显示
-        buttonLabel.value = '生成图片 ' + buttonDots;
-    }, 200);
-
+    btnElement.value.classList.remove('btn-primary');
+    btnElement.value.classList.add('btn-secondary');
     alt.value = "生成中 " + loadingChars[index];  // 初始化加载信息
     loadingInterval = setInterval(() => {
         index++;
@@ -101,9 +90,9 @@ async function generate() {
         }
     }
     // 清除定时器
-    clearInterval(buttonInterval);  // 当请求完成时清除计时器
-    buttonLabel.value = '生成图片';  // 取消加载状态并恢复原文字
     clearInterval(loadingInterval);
+    btnElement.value.classList.add('btn-primary');
+    btnElement.value.classList.remove('btn-secondary');
 
     if (response !== null) {
         // 设置占位图片并添加淡入淡出效果
@@ -122,7 +111,6 @@ async function generate() {
     }
 }
 const onCopy = e => {
-    alert("复制成功")
 }
 </script>
 
@@ -199,18 +187,10 @@ const onCopy = e => {
                             <input type="radio" name="background" id="background_0" value="粉紫色" class="m-2" v-model="store.background">
                             <label class="form-label" for="background_0">紫</label>
                         </div>
-                        <button id="generateButton" class="btn btn-primary" @click="generate">{{ buttonLabel }}</button>
+                        <button id="generateButton" class="btn btn-primary" @click="generate">生成图片</button>
                     </div>
                 </div>
             </div>
-            <div class="col">
-                <figure class="figure">
-                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' :alt="alt">
-                    <figcaption class="figure-caption">{{ alt }}</figcaption>
-                </figure>
-            </div>
-        </div>
-        <div class="row">
             <div class="col">
                 <div class="card mt-1">
                     <div class="card-header">
@@ -226,8 +206,6 @@ const onCopy = e => {
                         </li>
                     </ul>
                 </div>
-            </div>
-            <div class="col">
                 <div class="card mt-1 image-history">
                     <div class="card-header">
                         历史生成的图片（{{ pastImages.length }}）
@@ -240,19 +218,27 @@ const onCopy = e => {
                         </div>
                     </div>
                 </div>
+                <figure class="figure mt-1">
+                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad'>
+                    <figcaption class="figure-caption">{{ alt }}</figcaption>
+                </figure>
             </div>
         </div>
-
     </div>
 </template>
 
 <style scoped>
-#generateButton {
-    width: 200px;   
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-align: left; 
+.figure {
+    text-align: center;
+    width: 100%;
 }
+.figure-img {
+    max-height: 500px;
+}
+.figure-caption{
+    text-align: left;
+}
+
 @keyframes fadeInOut {
     0%,100% { opacity: 1; }
     50% { opacity: 0.3; }
@@ -267,12 +253,14 @@ const onCopy = e => {
 .image-scroll-list {
     overflow-x: auto;
     white-space: nowrap;
+    height: 132px;
 }
 .image-list-item {
     display: inline-block;
     margin-right: 10px;
 }
 .thumbnail {
-    width: 100px;
+    max-width: 100px;
+    max-height: 100px;
 }
 </style>
