@@ -6,7 +6,7 @@ import { ref, watch, onMounted } from 'vue';
 
 const placeholderImage = ref("https://generated.vusercontent.net/placeholder.svg");
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
-const alt = ref("A caption for the above image.");
+const caption = ref("");
 const session = ref("");
 const prompt = ref("Linux");
 const pastImages = ref([]);
@@ -38,7 +38,7 @@ async function generate() {
     image.value = placeholderImage.value;
     btnElement.value.classList.remove('btn-primary');
     btnElement.value.classList.add('btn-secondary');
-    alt.value = "生成中 " + loadingChars[index];  // 初始化加载信息
+    caption.value = "";
     loadingInterval = setInterval(() => {
         index++;
         // 当完成一次完整的旋转后，我们添加一个 '•'
@@ -52,7 +52,7 @@ async function generate() {
         }
 
         // 使用进度点和当前的旋转字符更新显示的字符串
-        alt.value = '生成中 ' + progress + ' ' + loadingChars[index];
+        session.value = '生成中 ' + progress + ' ' + loadingChars[index];
     }, 125);
 
     let response = null;
@@ -82,11 +82,11 @@ async function generate() {
             const axiosError = error;
             if (axiosError.response && axiosError.response.data.error) {
                 const { code, message } = axiosError.response.data.error;
-                alt.value = 'ERR : ' + code + ' - ' + message;
+                caption.value = 'ERR : ' + code + ' - ' + message;
             }
         } else {
             // 非 axios 的错误处理方式
-            alt.value = error.message;
+            caption.value = error.message;
         }
     }
     // 清除定时器
@@ -101,22 +101,33 @@ async function generate() {
 
         session.value = image.value.substr(image.value.indexOf('/images/') + 8, 36);
 
-        alt.value = response.data.data[0].revised_prompt;
+        caption.value = response.data.data[0].revised_prompt;
 
         pastImages.value.push({
             url: image.value,
-            caption: alt.value
+            caption: caption.value,
+            session: session.value
         });
         store.count++;
     }
 }
 const onCopy = e => {
+    e.trigger.classList.add('copy-fade');
+    e.trigger.addEventListener('animationend', function callback() {
+        e.trigger.classList.remove('copy-fade');
+        e.trigger.removeEventListener('animationend', callback);
+    });
+}
+const changeImage = (url, alt, title) => {
+    image.value = url;
+    caption.value = alt;
+    session.value = title;
 }
 </script>
 
 <template>
     <div class="container mb-3">
-        <h1 class="my-4">Azure DALL-E 3 图片生成器</h1>
+        <h1 class="my-4">Azure DALL-E 3 图片生成器（{{ store.count }}）</h1>
         <div class="row">
             <div class="col">
                 <div class="card">
@@ -192,36 +203,21 @@ const onCopy = e => {
                 </div>
             </div>
             <div class="col">
-                <div class="card mt-1">
-                    <div class="card-header">
-                        操作
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">已生成图片总量：
-                            <span class="badge bg-secondary">{{ store.count }}</span>
-                        </li>
-                        <li class="list-group-item">会话 ID：
-                            <span class="badge bg-secondary"> {{ session ? session : "Azure 会话 ID 可用于回溯" }}</span>
-                            <button type="button" v-clipboard:copy="session" v-clipboard:success="onCopy" class="btn btn-primary btn-sm ms-3">复制</button>
-                        </li>
-                    </ul>
-                </div>
                 <div class="card mt-1 image-history">
                     <div class="card-header">
                         历史生成的图片（{{ pastImages.length }}）
                     </div>
                     <div class="image-scroll-list p-3">
                         <div v-for="(pastImage, index) in pastImages" :key="index" class="image-list-item">
-                            <a :href="pastImage.url" target="_blank">
-                                <img :src="pastImage.url" :alt="pastImage.caption" class="thumbnail">
-                            </a>
+                            <img :src="pastImage.url" :alt="pastImage.caption" :title="pastImage.session" class="thumbnail" @click="changeImage(pastImage.url, pastImage.caption, pastImage.session)">
                         </div>
                     </div>
                 </div>
                 <figure class="figure mt-1">
-                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad'>
-                    <figcaption class="figure-caption">{{ alt }}</figcaption>
+                    <a :href="image" target="_blank"><img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad'></a>
+                    <figcaption class="figure-caption" id="caption" v-clipboard:copy="caption" v-clipboard:success="onCopy">{{ caption }}</figcaption>
                 </figure>
+                <div>会话 ID： <span class="badge bg-secondary" id="session" v-clipboard:copy="session" v-clipboard:success="onCopy"> {{ session ? session : "Azure 会话 ID 可用于回溯" }}</span></div>
             </div>
         </div>
     </div>
@@ -247,6 +243,9 @@ const onCopy = e => {
 .img-fade {
     animation: fadeInOut 2s infinite;
 }
+.copy-fade {
+    animation: fadeInOut 0.5s 1;
+}
 .image-history {
     margin-top: 20px;
 }
@@ -254,13 +253,30 @@ const onCopy = e => {
     overflow-x: auto;
     white-space: nowrap;
     height: 132px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
 }
 .image-list-item {
     display: inline-block;
     margin-right: 10px;
+    border: 1px solid #000;
+    height: 100px;
+    width: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 .thumbnail {
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 98px;
+    max-height: 98px;
+}
+#session {
+    cursor: copy;
+}
+#caption {
+    cursor: copy;
 }
 </style>
