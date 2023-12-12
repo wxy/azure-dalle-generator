@@ -6,6 +6,14 @@ import { ref, watch, onMounted } from 'vue';
 
 const placeholderImage = ref("https://generated.vusercontent.net/placeholder.svg");
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
+const tags = ref([
+    `数字绘画`, `拼贴`, `哑光绘画`, `电影照明`, `3D渲染`, `倾斜摄影`, `混合媒介`, `素描线条`, `立体阴影`, `合成`, `变形镜头`,
+    `8K 分辨率`,  `超精细`, `单色配色`, `粒子效果`, `数字插图`, `动态图形`, `高动态范围`, `逼真`, `高对比度`, `等距透视`, 
+    `科幻`, `乌托邦`, `反乌托邦`, `未来主义`, `伦理`, `宗教`, `抽象`,`超现实`, `超人类主义`, `机器人`, `智能机器`, 
+    `超现实`, `全息投影`, `自动化`, `增强现实`, `虚构`, 
+    `逼真`, `难以辨认`, 
+    `中世纪`, `现代`, 
+    `卡通`, `动画`]);
 const caption = ref("");
 const session = ref("");
 const prompt = ref("Linux");
@@ -70,8 +78,9 @@ async function generate() {
             },
             "data": {
                 "size": store.size,
-                "prompt": prompt.value 
+                "prompt": prompt.value + ' '
                     + (store.design !=='' ? ' 图片风格：' + store.design : '') 
+                    + store.selectedTags.value.join(' ')
                     + (store.background !== '' ? ' 图片背景：' + store.background : ''),
                 "quality": store.quality,
                 "style": store.style
@@ -110,6 +119,17 @@ async function generate() {
         });
         store.count++;
     }
+}
+// 点击标签后的操作
+const toggleTag = (tag) => {
+  const index = store.selectedTags.indexOf(tag);
+  if (index > -1) {
+    // 已经选中的标签，再次点击则取消选中
+    store.selectedTags.splice(index, 1);
+  } else {
+    // 未选中的标签，点击后加入到选中的标签数组中
+    store.selectedTags.push(tag);
+  }
 }
 const onCopy = e => {
     e.trigger.classList.add('copy-fade');
@@ -177,6 +197,9 @@ const changeImage = (url, alt, title) => {
                         </div>
                         <div class="mb-3">
                             <label class="form-label">图片样式</label>
+                            <div>
+                            <div v-for="(tag, index) in tags" :key="index" :class="{ 'selected-tag': store.selectedTags.includes(tag) }" class="tag" @click="toggleTag(tag)">{{ tag }}</div>
+                            </div>
                             <textarea class="form-control" v-model="store.design" rows="1"></textarea>
                         </div>
                         <div class="mb-3">
@@ -224,6 +247,19 @@ const changeImage = (url, alt, title) => {
 </template>
 
 <style scoped>
+.tag {
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 4px;
+    padding: 4px;
+    line-height: 1em;
+    cursor: pointer;
+}
+.selected-tag {
+    background: #FF5722;
+    color: #FFF;
+}
 .figure {
     text-align: center;
     width: 100%;

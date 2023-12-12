@@ -9,6 +9,7 @@ export const useGeneratorStore = defineStore('generator', {
             style: "vivid",
             quality: "standard",
             design: "",
+            selectedTags: [],
             background: -1,
             count: 0,
         }
