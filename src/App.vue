@@ -260,18 +260,22 @@ const changeImage = (url, alt, title) => {
 }
 .image-list-item {
     display: inline-block;
-    margin-right: 10px;
-    border: 1px solid #000;
-    height: 100px;
-    width: 100px;
+    margin: 10px;
+    background: #EEE;
+    height: 80px;
+    width: 80px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+}
+.image-list-item:hover {
+    background: #EEC;
 }
 .thumbnail {
-    max-width: 98px;
-    max-height: 98px;
+    max-width: 78px;
+    max-height: 78px;
 }
 #session {
     cursor: copy;
