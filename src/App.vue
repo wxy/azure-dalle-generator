@@ -80,7 +80,7 @@ async function generate() {
                 "size": store.size,
                 "prompt": prompt.value + ' '
                     + (store.design !=='' ? ' 图片风格：' + store.design : '') 
-                    + store.selectedTags.value.join(' ')
+                    + store.selectedTags.join(' ')
                     + (store.background !== '' ? ' 图片背景：' + store.background : ''),
                 "quality": store.quality,
                 "style": store.style
@@ -151,7 +151,7 @@ const changeImage = (url, alt, title) => {
         <div class="row">
             <div class="col">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body conf">
                         <h5 class="card-title">服务配置</h5>
                         <div class="mb-3">
                             <label class="form-label">API Endpoint</label>
@@ -164,11 +164,11 @@ const changeImage = (url, alt, title) => {
                     </div>
                 </div>
                 <div class="card mt-1">
-                    <div class="card-body">
+                    <div class="card-body conf">
                         <h5 class="card-title">图片配置</h5>
                         <div class="mb-3">
                             <label class="form-label">图片尺寸</label>
-                            <select v-model="store.size" class="form-select" aria-label="Default select example">
+                            <select v-model="store.size" class="form-select">
                                 <option selected>选择尺寸</option>
                                 <option value="1024x1024">1024x1024</option>
                                 <option value="1024x1792">1024x1792</option>
@@ -177,7 +177,7 @@ const changeImage = (url, alt, title) => {
                         </div>
                         <div class="mb-3">
                             <label class="form-label">图片风格</label>
-                            <select v-model="store.style" class="form-select" aria-label="Default select example">
+                            <select v-model="store.style" class="form-select">
                                 <option>选择风格</option>
                                 <option value="natural">正常</option>
                                 <option value="vivid" selected>生动</option>
@@ -185,7 +185,7 @@ const changeImage = (url, alt, title) => {
                         </div>
                         <div class="mb-3">
                             <label class="form-label">图片质量</label>
-                            <select v-model="store.quality" class="form-select" aria-label="Default select example">
+                            <select v-model="store.quality" class="form-select">
                                 <option>选择图片质量</option>
                                 <option value="standard">标准</option>
                                 <option value="hd" selected>高清</option>
@@ -197,10 +197,12 @@ const changeImage = (url, alt, title) => {
                         </div>
                         <div class="mb-3">
                             <label class="form-label">图片样式</label>
-                            <div>
-                            <div v-for="(tag, index) in tags" :key="index" :class="{ 'selected-tag': store.selectedTags.includes(tag) }" class="tag" @click="toggleTag(tag)">{{ tag }}</div>
+                            <div class="m-2">
+                                <div>
+                                    <div v-for="(tag, index) in tags" :key="index" :class="{ 'selected-tag': store.selectedTags.includes(tag) }" class="tag" @click="toggleTag(tag)">{{ tag }}</div>
+                                </div>
+                                <textarea class="form-control" v-model="store.design" rows="1"></textarea>
                             </div>
-                            <textarea class="form-control" v-model="store.design" rows="1"></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">图片背景</label><br />
@@ -247,6 +249,17 @@ const changeImage = (url, alt, title) => {
 </template>
 
 <style scoped>
+.conf .mb-3 {
+    display: flex;
+    align-items: center;
+}
+.conf .mb-3 .form-select,.conf .mb-3 .form-control  {
+    flex: 1;
+    margin: 5px;
+}
+.conf .mb-3 .form-label {
+    margin-bottom: 0;
+}
 .tag {
     border: 1px solid #CCC;
     border-radius: 4px;
