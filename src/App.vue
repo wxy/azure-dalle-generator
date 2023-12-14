@@ -7,13 +7,13 @@ import { ref, watch, onMounted } from 'vue';
 const placeholderImage = ref("https://generated.vusercontent.net/placeholder.svg");
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
 const tags = ref([
-    `数字绘画`, `拼贴`, `哑光绘画`, `电影照明`, `3D渲染`, `倾斜摄影`, `混合媒介`, `素描线条`, `立体阴影`, `合成`, `变形镜头`,
-    `8K 分辨率`,  `超精细`, `单色配色`, `粒子效果`, `数字插图`, `动态图形`, `高动态范围`, `逼真`, `高对比度`, `等距透视`, 
-    `科幻`, `乌托邦`, `反乌托邦`, `未来主义`, `伦理`, `宗教`, `抽象`,`超现实`, `超人类主义`, `机器人`, `智能机器`, 
-    `超现实`, `全息投影`, `自动化`, `增强现实`, `虚构`, 
-    `逼真`, `难以辨认`, 
-    `中世纪`, `现代`, 
-    `卡通`, `动画`]);
+    '哑光绘画', '点彩画', '浮世绘', '水彩画', '炭笔', '粉彩', '粉笔', '石墨铅笔', '彩色铅笔', '墨水和钢笔', '拼贴画', '丙烯画', '变形', '漆画', '壁画', '水粉画', '涂鸦', '灰粉', '浮雕', '微缩画', '壁画', '油画', '板画', '沙画', 
+    '全景', '透视画', '卷轴画', '浮雕', '涂鸦', '镂空', '纸艺', '三维', '素描', '卡通', '漫画', '|',
+    '电影照明', '倾斜摄影', '变形镜头', '等距透视', '全息投影', '|',
+    '超精细', '动态图形', '高动态范围', '逼真', '高对比度 ', '|',
+    '科幻', '乌托邦', '抽象', '超现实', '超人类主义', '虚构', '机器人', '智能机器', '中世纪现代', '|',
+    '装饰艺术', '巴洛克风格', '当代艺术', '立体主义', '野兽派', '未来主义', '几何主义', '印象派', '装置艺术', '极简主义', '新印象派', '新古典主义', '现实主义', '文艺复兴', '浪漫主义', '超现实主义'
+]);
 const caption = ref("");
 const session = ref("");
 const prompt = ref("Linux");
@@ -199,7 +199,7 @@ const changeImage = (url, alt, title) => {
                             <label class="form-label">图片样式</label>
                             <div class="m-2">
                                 <div>
-                                    <div v-for="(tag, index) in tags" :key="index" :class="{ 'selected-tag': store.selectedTags.includes(tag) }" class="tag" @click="toggleTag(tag)">{{ tag }}</div>
+                                    <div v-for="(tag, index) in tags" :key="index" :class="{ 'selected-tag': store.selectedTags.includes(tag), 'splitter': tag === '|' }" :style="{ 'border:none': tag === '|' }" class="tag" @click="toggleTag(tag)">{{  tag === '|' ? '' : tag }}</div>
                                 </div>
                                 <textarea class="form-control" v-model="store.design" rows="1"></textarea>
                             </div>
@@ -272,6 +272,11 @@ const changeImage = (url, alt, title) => {
 .selected-tag {
     background: #FF5722;
     color: #FFF;
+}
+.splitter {
+    border: none;
+    padding: 0;
+    width: 100%;
 }
 .figure {
     text-align: center;
