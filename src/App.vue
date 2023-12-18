@@ -39,7 +39,23 @@ function handleImageLoad() {
     // 移除淡入淡出效果
     imgElement.value.classList.remove('img-fade');
 }
-
+function downloadImage (event) {
+    let imgURL = event.target.src;
+    let title = event.target.title;
+    let extension = imgURL.split('?')[0].split('.').pop();
+    fetch(imgURL)
+    .then(resp => resp.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${title}.${extension}`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+    })
+    .catch(() => alert('图片下载失败'));
+}
 async function generate() {
     index = 0;
     progress = "";
@@ -243,7 +259,7 @@ const changeImage = (url, alt, title) => {
                     </div>
                 </div>
                 <figure class="figure mt-1">
-                    <a :href="image" target="_blank"><img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad'></a>
+                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' @click='downloadImage' :title="session">
                     <figcaption class="figure-caption" id="caption" v-clipboard:copy="caption" v-clipboard:success="onCopy">{{ caption }}</figcaption>
                 </figure>
                 <div>会话 ID： <span class="badge bg-secondary" id="session" v-clipboard:copy="session" v-clipboard:success="onCopy"> {{ session ? session : "Azure 会话 ID 可用于回溯" }}</span></div>
