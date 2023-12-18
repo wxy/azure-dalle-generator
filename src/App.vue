@@ -34,28 +34,6 @@ onMounted(() => {
     btnElement.value = document.querySelector('#generateButton');
 })
 
-// 图片加载完成的处理函数
-function handleImageLoad() {
-    // 移除淡入淡出效果
-    imgElement.value.classList.remove('img-fade');
-}
-function downloadImage (event) {
-    let imgURL = event.target.src;
-    let title = event.target.title;
-    let extension = imgURL.split('?')[0].split('.').pop();
-    fetch(imgURL)
-    .then(resp => resp.blob())
-    .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `${title}.${extension}`);
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode.removeChild(link);
-    })
-    .catch(() => alert('图片下载失败'));
-}
 async function generate() {
     index = 0;
     progress = "";
@@ -151,17 +129,39 @@ const toggleTag = (tag) => {
     store.selectedTags.push(tag);
   }
 }
-const onCopy = e => {
-    e.trigger.classList.add('copy-fade');
-    e.trigger.addEventListener('animationend', function callback() {
-        e.trigger.classList.remove('copy-fade');
-        e.trigger.removeEventListener('animationend', callback);
+const onCopy = (event) => {
+    event.trigger.classList.add('copy-fade');
+    event.trigger.addEventListener('animationend', function callback() {
+        event.trigger.classList.remove('copy-fade');
+        event.trigger.removeEventListener('animationend', callback);
     });
 }
 const changeImage = (url, alt, title) => {
     image.value = url;
     caption.value = alt;
     session.value = title;
+}
+// 图片加载完成的处理函数
+const handleImageLoad = () => {
+    // 移除淡入淡出效果
+    imgElement.value.classList.remove('img-fade');
+}
+const downloadImage = (event) => {
+    let imgURL = event.target.src;
+    let title = event.target.title;
+    let extension = imgURL.split('?')[0].split('.').pop();
+    fetch(imgURL)
+    .then(resp => resp.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${title}.${extension}`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+    })
+    .catch(() => alert('图片下载失败'));
 }
 </script>
 
@@ -170,19 +170,6 @@ const changeImage = (url, alt, title) => {
         <h1 class="my-4">Azure DALL-E 3 图片生成器（{{ store.count }}）</h1>
         <div class="row">
             <div class="col">
-                <div class="card">
-                    <div class="card-body conf">
-                        <h5 class="card-title">服务配置</h5>
-                        <div class="mb-3">
-                            <label class="form-label">API Endpoint</label>
-                            <input type="text" v-model="store.url" class="form-control" placeholder="API Endpoint">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">API Key</label>
-                            <input type="text" v-model="store.key" class="form-control" placeholder="API Endpoint">
-                        </div>
-                    </div>
-                </div>
                 <div class="card mt-1">
                     <div class="card-body conf">
                         <h5 class="card-title">图片配置</h5>
@@ -248,6 +235,19 @@ const changeImage = (url, alt, title) => {
                 </div>
             </div>
             <div class="col">
+                <div class="card">
+                    <div class="card-body conf">
+                        <h5 class="card-title">服务配置</h5>
+                        <div class="mb-3">
+                            <label class="form-label">API Endpoint</label>
+                            <input type="text" v-model="store.url" class="form-control" placeholder="API Endpoint">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">API Key</label>
+                            <input type="text" v-model="store.key" class="form-control" placeholder="API Endpoint">
+                        </div>
+                    </div>
+                </div>
                 <div class="card mt-1 image-history">
                     <div class="card-header">
                         历史生成的图片（{{ pastImages.length }}）
