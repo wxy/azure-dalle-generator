@@ -2,13 +2,13 @@
 import { useGeneratorStore } from "./stores/generator";
 import axios from "axios";
 const store = useGeneratorStore();
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 
 const placeholderImage = ref("https://generated.vusercontent.net/placeholder.svg");
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
 const tags = ref([
-    '哑光绘画', '点彩画', '浮世绘', '水彩画', '炭笔', '粉彩', '粉笔', '石墨铅笔', '彩色铅笔', '墨水和钢笔', '拼贴画', '丙烯画', '变形', '漆画', '壁画', '水粉画', '涂鸦', '灰粉', '浮雕', '微缩画', '壁画', '油画', '板画', '沙画', 
-    '全景', '透视画', '卷轴画', '浮雕', '涂鸦', '镂空', '纸艺', '三维', '素描', '卡通', '漫画', '|',
+    '哑光绘画', '点彩画', '浮世绘', '水彩画', '炭笔', '粉彩', '粉笔', '石墨铅笔', '彩色铅笔', '墨水和钢笔', '拼贴画', '丙烯画', '变形', '漆画', '壁画', '水粉画', '涂鸦', '灰粉', '浮雕', '微缩画', '油画', '板画', '沙画', 
+    '全景', '透视画', '卷轴画', '涂鸦', '镂空', '纸艺', '三维', '素描', '卡通', '漫画', '|',
     '电影照明', '倾斜摄影', '变形镜头', '等距透视', '全息投影', '|',
     '超精细', '动态图形', '高动态范围', '逼真', '高对比度 ', '|',
     '科幻', '乌托邦', '抽象', '超现实', '超人类主义', '虚构', '机器人', '智能机器', '中世纪现代', '|',
@@ -43,10 +43,10 @@ function handleImageLoad() {
 async function generate() {
     index = 0;
     progress = "";
-    image.value = placeholderImage.value;
+    //image.value = placeholderImage.value;
     btnElement.value.classList.remove('btn-primary');
     btnElement.value.classList.add('btn-secondary');
-    caption.value = "";
+    //caption.value = "";
     loadingInterval = setInterval(() => {
         index++;
         // 当完成一次完整的旋转后，我们添加一个 '•'
@@ -118,6 +118,10 @@ async function generate() {
             session: session.value
         });
         store.count++;
+        nextTick(() => {
+            const container = document.querySelector('.image-scroll-list');
+            container.scrollTop = container.scrollHeight;
+        });
     }
 }
 // 点击标签后的操作
