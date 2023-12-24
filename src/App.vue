@@ -37,10 +37,11 @@ onMounted(() => {
 async function generate() {
     index = 0;
     progress = "";
-    //image.value = placeholderImage.value;
     btnElement.value.classList.remove('btn-primary');
     btnElement.value.classList.add('btn-secondary');
-    //caption.value = "";
+    if (loadingInterval !== null) {
+        clearInterval(loadingInterval);
+    }
     loadingInterval = setInterval(() => {
         index++;
         // 当完成一次完整的旋转后，我们添加一个 '•'
@@ -254,12 +255,12 @@ const downloadImage = (event) => {
                     </div>
                     <div class="image-scroll-list p-3">
                         <div v-for="(pastImage, index) in pastImages" :key="index" class="image-list-item">
-                            <img :src="pastImage.url" :alt="pastImage.caption" :title="pastImage.session" class="thumbnail" @click="changeImage(pastImage.url, pastImage.caption, pastImage.session)">
+                            <img :src="pastImage.url" class="thumbnail" @click="changeImage(pastImage.url, pastImage.caption, pastImage.session)">
                         </div>
                     </div>
                 </div>
                 <figure class="figure mt-1">
-                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' @click='downloadImage' :title="session">
+                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' @click='downloadImage' title="点击保存图片">
                     <figcaption class="figure-caption" id="caption" v-clipboard:copy="caption" v-clipboard:success="onCopy">{{ caption }}</figcaption>
                 </figure>
                 <div>会话 ID： <span class="badge bg-secondary" id="session" v-clipboard:copy="session" v-clipboard:success="onCopy"> {{ session ? session : "Azure 会话 ID 可用于回溯" }}</span></div>
@@ -304,6 +305,7 @@ const downloadImage = (event) => {
 }
 .figure-img {
     max-height: 500px;
+    cursor: pointer;
 }
 .figure-caption{
     text-align: left;
