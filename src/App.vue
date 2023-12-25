@@ -149,7 +149,7 @@ const handleImageLoad = () => {
 }
 const downloadImage = (event) => {
     let imgURL = event.target.src;
-    let title = event.target.title;
+    let session = event.target.alt;
     let extension = imgURL.split('?')[0].split('.').pop();
     fetch(imgURL)
     .then(resp => resp.blob())
@@ -157,7 +157,7 @@ const downloadImage = (event) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `${title}.${extension}`);
+        link.setAttribute('download', `${session}.${extension}`);
         document.body.appendChild(link);
         link.click();
         link.parentNode.removeChild(link);
@@ -260,7 +260,7 @@ const downloadImage = (event) => {
                     </div>
                 </div>
                 <figure class="figure mt-1">
-                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' @click='downloadImage' title="点击保存图片">
+                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' @click='downloadImage' title="点击保存图片" :alt="session">
                     <figcaption class="figure-caption" id="caption" v-clipboard:copy="caption" v-clipboard:success="onCopy">{{ caption }}</figcaption>
                 </figure>
                 <div>会话 ID： <span class="badge bg-secondary" id="session" v-clipboard:copy="session" v-clipboard:success="onCopy"> {{ session ? session : "Azure 会话 ID 可用于回溯" }}</span></div>
