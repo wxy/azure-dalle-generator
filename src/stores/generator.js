@@ -12,10 +12,13 @@ export const useGeneratorStore = defineStore('generator', {
             selectedTags: [],
             background: "",
             count: 0,
+            theme: 'light',
         }
     },
     actions: {
-       
+        toggleTheme() {
+            this.theme = this.theme === 'light' ? 'dark' : 'light';
+        }
     },
 }, {
     persist: true

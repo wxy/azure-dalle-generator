@@ -3,12 +3,13 @@ import { useGeneratorStore } from "./stores/generator";
 import axios from "axios";
 const store = useGeneratorStore();
 import { ref, watch, onMounted, nextTick } from 'vue';
+import './style.css';
 
 const placeholderImage = ref("https://generated.vusercontent.net/placeholder.svg");
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
 const tags = ref([
     '哑光绘画', '点彩画', '浮世绘', '水彩画', '炭笔', '粉彩', '粉笔', '石墨铅笔', '彩色铅笔', '墨水和钢笔', '拼贴画', '丙烯画', '变形', '漆画', '壁画', '水粉画', '涂鸦', '灰粉', '浮雕', '微缩画', '油画', '板画', '沙画', 
-    '全景', '透视画', '卷轴画', '涂鸦', '镂空', '纸艺', '三维', '素描', '卡通', '漫画', '|',
+    '全景', '透视画', '卷轴画', '镂空', '纸艺', '三维', '素描', '卡通', '漫画', '|',
     '电影照明', '倾斜摄影', '变形镜头', '等距透视', '全息投影', '|',
     '超精细', '动态图形', '高动态范围', '逼真', '高对比度 ', '|',
     '科幻', '乌托邦', '抽象', '超现实', '超人类主义', '虚构', '机器人', '智能机器', '中世纪现代', '|',
@@ -33,7 +34,9 @@ onMounted(() => {
     imgElement.value = document.querySelector('.figure-img');
     btnElement.value = document.querySelector('#generateButton');
 })
-
+watch(() => store.theme, (newTheme) => {
+    document.documentElement.setAttribute('data-theme', newTheme);
+});
 async function generate() {
     index = 0;
     progress = "";
@@ -164,11 +167,16 @@ const downloadImage = (event) => {
     })
     .catch(() => alert('图片下载失败'));
 }
+// 添加一个新的方法来切换主题
+const switchTheme = () => {
+    store.toggleTheme()
+}
 </script>
 
 <template>
     <div class="container mb-3">
         <h1 class="my-4">Azure DALL-E 3 图片生成器（{{ store.count }}）</h1>
+        <button id='theme-toggle-button' @click='switchTheme'> <i :class='store.theme === "light" ? "fas fa-moon" : "fas fa-sun"'></i></button>
         <div class="row">
             <div class="col">
                 <div class="card mt-1">
@@ -251,112 +259,30 @@ const downloadImage = (event) => {
                 </div>
                 <div class="card mt-1 image-history">
                     <div class="card-header">
-                        历史生成的图片（{{ pastImages.length }}）
+                            历史生成的图片（{{ pastImages.length }}）
                     </div>
-                    <div class="image-scroll-list p-3">
-                        <div v-for="(pastImage, index) in pastImages" :key="index" class="image-list-item">
-                            <img :src="pastImage.url" class="thumbnail" @click="changeImage(pastImage.url, pastImage.caption, pastImage.session)">
+                    <div class="card-body">
+                        <div class="image-scroll-list p-3">
+                            <div v-for="(pastImage, index) in pastImages" :key="index" class="image-list-item">
+                                <img :src="pastImage.url" class="thumbnail" @click="changeImage(pastImage.url, pastImage.caption, pastImage.session)">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <figure class="figure mt-1">
-                    <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' @click='downloadImage' title="点击保存图片" :alt="session">
-                    <figcaption class="figure-caption" id="caption" v-clipboard:copy="caption" v-clipboard:success="onCopy">{{ caption }}</figcaption>
-                </figure>
-                <div>会话 ID： <span class="badge bg-secondary" id="session" v-clipboard:copy="session" v-clipboard:success="onCopy"> {{ session ? session : "Azure 会话 ID 可用于回溯" }}</span></div>
+                <div class="card mt-1">
+                    <div class="card-body">
+                        <figure class="figure mt-1">
+                            <img :src="image" class="figure-img img-thumbnail" @load='handleImageLoad' @click='downloadImage' title="点击保存图片" :alt="session">
+                            <figcaption class="figure-caption" id="caption" v-clipboard:copy="caption" v-clipboard:success="onCopy">{{ caption }}</figcaption>
+                        </figure>
+                        <div>会话 ID： <span class="badge bg-secondary" id="session" v-clipboard:copy="session" v-clipboard:success="onCopy"> {{ session ? session : "Azure 会话 ID 可用于回溯" }}</span></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.conf .mb-3 {
-    display: flex;
-    align-items: center;
-}
-.conf .mb-3 .form-select,.conf .mb-3 .form-control  {
-    flex: 1;
-    margin: 5px;
-}
-.conf .mb-3 .form-label {
-    margin-bottom: 0;
-}
-.tag {
-    border: 1px solid #CCC;
-    border-radius: 4px;
-    display: inline-block;
-    margin: 4px;
-    padding: 4px;
-    line-height: 1em;
-    cursor: pointer;
-}
-.selected-tag {
-    background: #FF5722;
-    color: #FFF;
-}
-.splitter {
-    border: none;
-    padding: 0;
-    width: 100%;
-}
-.figure {
-    text-align: center;
-    width: 100%;
-}
-.figure-img {
-    max-height: 500px;
-    cursor: pointer;
-}
-.figure-caption{
-    text-align: left;
-}
 
-@keyframes fadeInOut {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.3; }
-}
-
-.img-fade {
-    animation: fadeInOut 2s infinite;
-}
-.copy-fade {
-    animation: fadeInOut 0.5s 1;
-}
-.image-history {
-    margin-top: 20px;
-}
-.image-scroll-list {
-    overflow-x: auto;
-    white-space: nowrap;
-    height: 132px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-}
-.image-list-item {
-    display: inline-block;
-    margin: 10px;
-    background: #EEE;
-    height: 80px;
-    width: 80px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-.image-list-item:hover {
-    background: #EEC;
-}
-.thumbnail {
-    max-width: 78px;
-    max-height: 78px;
-}
-#session {
-    cursor: copy;
-}
-#caption {
-    cursor: copy;
-}
 </style>

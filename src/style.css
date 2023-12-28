@@ -1,3 +1,147 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 明暗主题切换 */
+html {
+    --color-background: #ffffff;
+    --color-text: #000000;
+    --color-border: rgba(0,0,0,.125); /* 默认主题，淡黑色边框 */
+}
+
+html[data-theme='dark'] {
+    --color-background: #000000;
+    --color-text: #ffffff;
+    --color-border: rgba(255,255,255,.5); /* 暗色主题，使用更亮的边框颜色 */
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
+
+.container {
+    position: relative;
+}
+.card {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+#theme-toggle-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: none;
+    background: none;
+    color: var(--color-text);
+}
+#moon-icon {
+    display: none; /* 在默认（明亮）主题中，隐藏月亮图标 */
+}
+[data-theme='dark'] #sun-icon {
+    display: none; /* 在暗色主题中，隐藏太阳图标，显示月亮图标 */
+}
+[data-theme='dark'] #moon-icon {
+    display: inline-block;
+}
+
+/* 配置区 */
+.conf .mb-3 {
+    display: flex;
+    align-items: center;
+}
+.conf .mb-3 .form-select,.conf .mb-3 .form-control  {
+    flex: 1;
+    margin: 5px;
+}
+.conf .mb-3 .form-label {
+    margin-bottom: 0;
+}
+
+/* 标签 */
+.tag {
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 4px;
+    padding: 4px;
+    line-height: 1em;
+    cursor: pointer;
+}
+.selected-tag {
+    background: #FF5722;
+    color: #FFF;
+}
+.splitter {
+    border: none;
+    padding: 0;
+    width: 100%;
+}
+
+/* 动画反馈 */
+@keyframes fadeInOut {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* 图片 */
+.figure {
+    text-align: center;
+    width: 100%;
+}
+.figure-img {
+    max-height: 500px;
+    cursor: pointer;
+}
+.figure-caption{
+    text-align: left;
+}
+.img-fade {
+    animation: fadeInOut 2s infinite;
+}
+
+/* 历史图片 */
+.image-history {
+    margin-top: 20px;
+}
+.image-scroll-list {
+    overflow-x: auto;
+    white-space: nowrap;
+    height: 132px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+.image-list-item {
+    display: inline-block;
+    margin: 10px;
+    background: #EEE;
+    height: 80px;
+    width: 80px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.image-list-item:hover {
+    background: #EEC;
+}
+.thumbnail {
+    max-width: 78px;
+    max-height: 78px;
+}
+
+/* 点击复制 */
+#session {
+    cursor: copy;
+}
+#caption {
+    cursor: copy;
+}
+.copy-fade {
+    animation: fadeInOut 0.5s 1;
+}
