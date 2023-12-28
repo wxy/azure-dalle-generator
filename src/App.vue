@@ -258,10 +258,10 @@ const switchTheme = () => {
                     </div>
                 </div>
                 <div class="card mt-1 image-history">
-                    <div class="card-body">
-                        <h5 class="card-title">
+                    <div class="card-header">
                             历史生成的图片（{{ pastImages.length }}）
-                        </h5>
+                    </div>
+                    <div class="card-body">
                         <div class="image-scroll-list p-3">
                             <div v-for="(pastImage, index) in pastImages" :key="index" class="image-list-item">
                                 <img :src="pastImage.url" class="thumbnail" @click="changeImage(pastImage.url, pastImage.caption, pastImage.session)">
