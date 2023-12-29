@@ -9,7 +9,7 @@ export const useGeneratorStore = defineStore('generator', {
             style: "vivid",
             quality: "standard",
             design: "",
-            selectedTags: [],
+            selectedTags: {},
             background: "",
             count: 0,
             theme: 'light',

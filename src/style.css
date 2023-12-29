@@ -48,16 +48,17 @@ body {
 }
 
 /* 配置区 */
-.conf .mb-3 {
+.conf .mb-1 {
     display: flex;
     align-items: center;
 }
-.conf .mb-3 .form-select,.conf .mb-3 .form-control  {
+.conf .mb-1 .form-select,.conf .mb-1 .form-control  {
     flex: 1;
     margin: 5px;
 }
-.conf .mb-3 .form-label {
+.conf .mb-1 .form-label {
     margin-bottom: 0;
+    min-width: 100px;
 }
 
 /* 标签 */
