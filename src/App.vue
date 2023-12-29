@@ -7,19 +7,23 @@ import './style.css';
 
 const placeholderImage = ref("https://generated.vusercontent.net/placeholder.svg");
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
-const tags = ref([
-    '哑光绘画', '点彩画', '浮世绘', '水彩画', '炭笔', '粉彩', '粉笔', '石墨铅笔', '彩色铅笔', '墨水和钢笔', '拼贴画', '丙烯画', '变形', '漆画', '壁画', '水粉画', '涂鸦', '灰粉', '浮雕', '微缩画', '油画', '板画', '沙画', 
-    '全景', '透视画', '卷轴画', '镂空', '纸艺', '三维', '素描', '卡通', '漫画', '|',
-    '电影照明', '倾斜摄影', '变形镜头', '等距透视', '全息投影', '|',
-    '超精细', '动态图形', '高动态范围', '逼真', '高对比度 ', '|',
-    '科幻', '乌托邦', '抽象', '超现实', '超人类主义', '虚构', '机器人', '智能机器', '中世纪现代', '|',
-    '装饰艺术', '巴洛克风格', '当代艺术', '立体主义', '野兽派', '未来主义', '几何主义', '印象派', '装置艺术', '极简主义', '新印象派', '新古典主义', '现实主义', '文艺复兴', '浪漫主义', '超现实主义'
-]);
+const tags = ref({
+    "绘画工具": ['笔', '刷', '刀', '针', '炭'],
+    "绘画材料": ['水彩画', '粉彩画', '粉笔画', '石墨铅笔画', '彩色铅笔画', '丙烯画', '漆画', '水粉画', '油画', '版画', '沙画'],
+    "绘画技法": ['素描', '点彩画', '拼贴画', '湿媒介', '干媒介', '混合媒介'],
+    "绘画材质": ['画纸', '画布', '石材', '瓷板', '木板', '铜板', '壁画'],
+    "表面效果": ['哑光','镜面', '有纹理', '无纹理'],
+    "图像视角": ['全景', '透视画', '顶视图', '三维','一点透视', '两点透视', '多点透视'],
+    "表现形式": ['卷轴', '浮雕', '镂空', '纸艺', '壁画', '微缩画'],
+    "图像主题": ['科幻', '乌托邦', '抽象', '超现实', '超人类主义', '虚构', '中世纪现代', '肖像', '风景', '静物', '抽象符号', '象征主义', '历史', '神话', '宗教', '文化', '日常生活'],
+    "风格流派": ['浮世绘', '装饰艺术', '巴洛克风格', '当代艺术', '立体主义', '野兽派', '未来主义', '几何主义', '印象派', '装置艺术', '极简主义', '新印象派', '新古典主义', '现实主义', '文艺复兴', '浪漫主义', '实用主义', '达达主义', '表现主义', '抽象表现主义', '流行艺术', '后现代主义', '复古主义', '象形文字', '魔幻现实主义', '新表现主义', '野性派', '派拉洛士'],
+    "光线投影": ['自然光', '人造光', '直射光', '散射光', '逆光', '侧光'] 
+});
 const caption = ref("");
 const session = ref("");
 const prompt = ref("Linux");
 const pastImages = ref([]);
-
+store.selectedTags = {}; 
 // 图片生成进度
 let loadingInterval = null;  // 定义一个变量来存储计时器ID
 const loadingChars = ['↑', '↗', '→', '↘', '↓', '↙', '←', '↖'];  // 定义一组字符来展示滚动
@@ -76,9 +80,8 @@ async function generate() {
             },
             "data": {
                 "size": store.size,
-                "prompt": prompt.value + ' '
-                    + (store.design !=='' ? ' 图片风格：' + store.design : '') 
-                    + store.selectedTags.join(' ')
+                "prompt": prompt.value + '。'
+                    + selectedTagsToString()
                     + (store.background !== '' ? ' 图片背景：' + store.background : ''),
                 "quality": store.quality,
                 "style": store.style
@@ -123,15 +126,24 @@ async function generate() {
     }
 }
 // 点击标签后的操作
-const toggleTag = (tag) => {
-  const index = store.selectedTags.indexOf(tag);
+const toggleTag = (category, tag) => {
+  if (!store.selectedTags[category]) store.selectedTags[category] = [];
+  const index = store.selectedTags[category].indexOf(tag);
   if (index > -1) {
-    // 已经选中的标签，再次点击则取消选中
-    store.selectedTags.splice(index, 1);
+    store.selectedTags[category].splice(index, 1);
   } else {
-    // 未选中的标签，点击后加入到选中的标签数组中
-    store.selectedTags.push(tag);
+    store.selectedTags[category].push(tag);
   }
+};
+const selectedTagsToString = () => {
+  let result = '';
+  console.log(store.selectedTags)
+  for (let category in store.selectedTags) {
+    if (store.selectedTags[category].length > 0) {
+      result += category + '：' + store.selectedTags[category].join('，') + '；';
+    }
+  }
+  return result;
 }
 const onCopy = (event) => {
     event.trigger.classList.add('copy-fade');
@@ -182,7 +194,7 @@ const switchTheme = () => {
                 <div class="card mt-1">
                     <div class="card-body conf">
                         <h5 class="card-title">图片配置</h5>
-                        <div class="mb-3">
+                        <div class="mb-1">
                             <label class="form-label">图片尺寸</label>
                             <select v-model="store.size" class="form-select">
                                 <option selected>选择尺寸</option>
@@ -191,7 +203,7 @@ const switchTheme = () => {
                                 <option value="1792x1024">1792x1024</option>
                             </select>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-1">
                             <label class="form-label">图片风格</label>
                             <select v-model="store.style" class="form-select">
                                 <option>选择风格</option>
@@ -199,7 +211,7 @@ const switchTheme = () => {
                                 <option value="vivid" selected>生动</option>
                             </select>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-1">
                             <label class="form-label">图片质量</label>
                             <select v-model="store.quality" class="form-select">
                                 <option>选择图片质量</option>
@@ -207,37 +219,46 @@ const switchTheme = () => {
                                 <option value="hd" selected>高清</option>
                             </select>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-1">
                             <label class="form-label">图片描述</label>
                             <textarea class="form-control" v-model="prompt" rows="5"></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">图片样式</label>
-                            <div class="m-2">
-                                <div>
-                                    <div v-for="(tag, index) in tags" :key="index" :class="{ 'selected-tag': store.selectedTags.includes(tag), 'splitter': tag === '|' }" :style="{ 'border:none': tag === '|' }" class="tag" @click="toggleTag(tag)">{{  tag === '|' ? '' : tag }}</div>
+                        <div class="mb-1">
+                            <label class="form-label">图片属性</label>
+                            <div>
+                                <div class="mb-1"  v-for='(categoryTags, categoryName) in tags' :key='categoryName'>
+                                    <label class="form-label">{{ categoryName }} ：</label>
+                                    <div>
+                                        <div 
+                                        v-for='(tag, index) in categoryTags' 
+                                        :key='index' 
+                                        :class="{ 'selected-tag': store.selectedTags[categoryName] && store.selectedTags[categoryName].includes(tag) }" 
+                                        class='tag' 
+                                        @click='toggleTag(categoryName, tag)'>
+                                        {{ tag }}
+                                        </div>
+                                    </div>
                                 </div>
-                                <textarea class="form-control" v-model="store.design" rows="1"></textarea>
                             </div>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-1">
                             <label class="form-label">图片背景</label><br />
                             <input type="radio" name="background" id="background_-1" value="" class="m-2" v-model="store.background">
-                            <label class="form-label" for="background_-1">不指定</label>
+                            <label for="background_-1">不指定</label>
                             <input type="radio" name="background" id="background_1" value="红色" class="m-2" v-model="store.background">
-                            <label class="form-label" for="background_1">赤</label>
+                            <label for="background_1">赤</label>
                             <input type="radio" name="background" id="background_2" value="橙色" class="m-2" v-model="store.background">
-                            <label class="form-label" for="background_2">橙</label>
+                            <label for="background_2">橙</label>
                             <input type="radio" name="background" id="background_3" value="黄色" class="m-2" v-model="store.background">
-                            <label class="form-label" for="background_3">黄</label>
+                            <label for="background_3">黄</label>
                             <input type="radio" name="background" id="background_4" value="绿色" class="m-2" v-model="store.background">
-                            <label class="form-label" for="background_4">绿</label>
+                            <label for="background_4">绿</label>
                             <input type="radio" name="background" id="background_5" value="青色" class="m-2" v-model="store.background">
-                            <label class="form-label" for="background_5">青</label>
+                            <label for="background_5">青</label>
                             <input type="radio" name="background" id="background_6" value="蓝色" class="m-2" v-model="store.background">
-                            <label class="form-label" for="background_6">蓝</label>
+                            <label for="background_6">蓝</label>
                             <input type="radio" name="background" id="background_0" value="粉紫色" class="m-2" v-model="store.background">
-                            <label class="form-label" for="background_0">紫</label>
+                            <label for="background_0">紫</label>
                         </div>
                         <button id="generateButton" class="btn btn-primary" @click="generate">生成图片</button>
                     </div>
@@ -247,11 +268,11 @@ const switchTheme = () => {
                 <div class="card">
                     <div class="card-body conf">
                         <h5 class="card-title">服务配置</h5>
-                        <div class="mb-3">
+                        <div class="mb-1">
                             <label class="form-label">API Endpoint</label>
                             <input type="text" v-model="store.url" class="form-control" placeholder="API Endpoint">
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-1">
                             <label class="form-label">API Key</label>
                             <input type="text" v-model="store.key" class="form-control" placeholder="API Endpoint">
                         </div>
