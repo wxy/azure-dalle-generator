@@ -100,15 +100,14 @@ async function generate() {
     }
     // 清除定时器
     clearInterval(loadingInterval);
-    btnElement.value.classList.add('btn-primary');
-    btnElement.value.classList.remove('btn-secondary');
+    btnElement.value.classList.add('btn-primary').remove('btn-secondary');
 
     if (response !== null) {
         // 设置占位图片并添加淡入淡出效果
         imgElement.value.classList.add('img-fade');
         image.value = response.data.data[0].url;
 
-        session.value = image.value.substr(image.value.indexOf('/images/') + 8, 36);
+        session.value = image.value.substring(image.value.indexOf('/images/') + 8, 44);
 
         caption.value = response.data.data[0].revised_prompt;
 
@@ -136,7 +135,6 @@ const toggleTag = (category, tag) => {
 };
 const selectedTagsToString = () => {
   let result = '';
-  console.log(store.selectedTags)
   for (let category in store.selectedTags) {
     if (store.selectedTags[category].length > 0) {
       result += category + '：' + store.selectedTags[category].join('，') + '；';
