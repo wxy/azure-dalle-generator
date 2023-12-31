@@ -100,14 +100,15 @@ async function generate() {
     }
     // 清除定时器
     clearInterval(loadingInterval);
-    btnElement.value.classList.add('btn-primary').remove('btn-secondary');
+    btnElement.value.classList.add('btn-primary');
+    btnElement.value.classList.remove('btn-secondary');
 
     if (response !== null) {
         // 设置占位图片并添加淡入淡出效果
         imgElement.value.classList.add('img-fade');
         image.value = response.data.data[0].url;
 
-        session.value = image.value.substring(image.value.indexOf('/images/') + 8, 44);
+        session.value = image.value.substring(image.value.indexOf('/images/') + 8, image.value.indexOf('/images/') + 8 + 36);
 
         caption.value = response.data.data[0].revised_prompt;
 
