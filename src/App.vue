@@ -216,23 +216,25 @@ const switchTheme = () => {
                             <TagComponent ref='tagComponent' :tags='tags' :selectedTags='store.selectedTags' />
                         </div>
                         <div class="mb-1">
-                            <label class="form-label">图片背景</label><br />
-                            <input type="radio" name="background" id="background_-1" value="" class="m-2" v-model="store.background">
-                            <label for="background_-1">不指定</label>
-                            <input type="radio" name="background" id="background_1" value="红色" class="m-2" v-model="store.background">
-                            <label for="background_1">赤</label>
-                            <input type="radio" name="background" id="background_2" value="橙色" class="m-2" v-model="store.background">
-                            <label for="background_2">橙</label>
-                            <input type="radio" name="background" id="background_3" value="黄色" class="m-2" v-model="store.background">
-                            <label for="background_3">黄</label>
-                            <input type="radio" name="background" id="background_4" value="绿色" class="m-2" v-model="store.background">
-                            <label for="background_4">绿</label>
-                            <input type="radio" name="background" id="background_5" value="青色" class="m-2" v-model="store.background">
-                            <label for="background_5">青</label>
-                            <input type="radio" name="background" id="background_6" value="蓝色" class="m-2" v-model="store.background">
-                            <label for="background_6">蓝</label>
-                            <input type="radio" name="background" id="background_0" value="粉紫色" class="m-2" v-model="store.background">
-                            <label for="background_0">紫</label>
+                            <label class="form-label">图片背景</label>
+                            <fieldset class="form-control bgs">
+                                <input type="radio" name="background" id="background_-1" value="" class="m-2" v-model="store.background">
+                                <label for="background_-1">不指定</label>
+                                <input type="radio" name="background" id="background_1" value="红色" class="m-2" v-model="store.background">
+                                <label for="background_1">赤</label>
+                                <input type="radio" name="background" id="background_2" value="橙色" class="m-2" v-model="store.background">
+                                <label for="background_2">橙</label>
+                                <input type="radio" name="background" id="background_3" value="黄色" class="m-2" v-model="store.background">
+                                <label for="background_3">黄</label>
+                                <input type="radio" name="background" id="background_4" value="绿色" class="m-2" v-model="store.background">
+                                <label for="background_4">绿</label>
+                                <input type="radio" name="background" id="background_5" value="青色" class="m-2" v-model="store.background">
+                                <label for="background_5">青</label>
+                                <input type="radio" name="background" id="background_6" value="蓝色" class="m-2" v-model="store.background">
+                                <label for="background_6">蓝</label>
+                                <input type="radio" name="background" id="background_0" value="粉紫色" class="m-2" v-model="store.background">
+                                <label for="background_0">紫</label>
+                            </fieldset>
                         </div>
                         <button id="generateButton" class="btn btn-primary" @click="generate">生成图片</button>
                     </div>
