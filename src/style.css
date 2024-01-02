@@ -7,12 +7,14 @@ html {
     --color-background: #ffffff;
     --color-text: #000000;
     --color-border: rgba(0,0,0,.125); /* 默认主题，淡黑色边框 */
+    --color-block: rgba(0,0,0,.05);
 }
 
 html[data-theme='dark'] {
     --color-background: #000000;
     --color-text: #ffffff;
     --color-border: rgba(255,255,255,.5); /* 暗色主题，使用更亮的边框颜色 */
+    --color-block: rgba(255,255,255,.25);
 }
 
 body {
@@ -52,39 +54,27 @@ body {
     display: flex;
     align-items: center;
 }
-.conf .mb-1 .form-select,.conf .mb-1 .form-control  {
+.conf .mb-1 .form-select, .conf .mb-1 .form-control  {
     flex: 1;
     margin: 5px;
+    font-size: 12px;
+    background-color: var(--color-block);
+    color: var(--color-text)
 }
 .conf .mb-1 .form-label {
     margin-bottom: 0;
-    min-width: 100px;
-}
-
-/* 标签 */
-.tag {
-    border: 1px solid #CCC;
-    border-radius: 4px;
-    display: inline-block;
-    margin: 4px;
-    padding: 4px;
-    line-height: 1em;
-    cursor: pointer;
-}
-.selected-tag {
-    background: #FF5722;
-    color: #FFF;
-}
-.splitter {
-    border: none;
-    padding: 0;
-    width: 100%;
+    min-width: 70px;
 }
 
 /* 动画反馈 */
 @keyframes fadeInOut {
     0%,100% { opacity: 1; }
     50% { opacity: 0.3; }
+}
+
+.bgs {
+    display: flex;
+    align-items: center;
 }
 
 /* 图片 */

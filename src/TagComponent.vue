@@ -1,13 +1,19 @@
 <template>
-  <div><div class='mb-1'  v-for='(categoryTags, categoryName) in tags' :key='categoryName'>
-        <label class='form-label'>{{ categoryName }} ：</label>
-        <div><div 
-v-for='(tag, index) in categoryTags' 
-:key='index' 
-:class="{ 'selected-tag': selectedTags[categoryName] && selectedTags[categoryName].includes(tag) }" 
-class='tag' 
-@click='toggleTag(categoryName, tag)'>{{ tag }}</div></div>
-  </div></div>
+    <div class="tags">
+      <div class="mb-1" v-for="(categoryTags, categoryName) in tags" :key="categoryName">
+        <label class="form-label">{{ categoryName }} ：</label>
+        <div>
+          <div 
+            v-for="(tag, index) in categoryTags" 
+            :key="index" 
+            :class="{ 'selected-tag': selectedTags[categoryName] && selectedTags[categoryName].includes(tag) }" 
+            class="tag" 
+            @click="toggleTag(categoryName, tag)">
+            {{ tag }}
+          </div>
+        </div>
+      </div>
+    </div>
 </template>
 
 <script>
@@ -35,3 +41,38 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* 标签 */
+.tags {
+    font-size: 12px;
+}
+.tags .mb-1 {
+    background-color: var(--color-block);
+    border: 1px solid var(--color-border);
+    padding: 0 4px;
+    margin: 4px;
+    border-radius: 4px;
+}
+.tags .mb-1 .form-label {
+    min-width: 65px;
+}
+.tag {
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 4px;
+    padding: 4px;
+    line-height: 1em;
+    cursor: pointer;
+}
+.selected-tag {
+    background: #FF5722;
+    color: #FFF;
+}
+.splitter {
+    border: none;
+    padding: 0;
+    width: 100%;
+}
+</style>
