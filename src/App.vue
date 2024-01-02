@@ -1,11 +1,11 @@
 <script setup>
 import { useGeneratorStore } from "./stores/generator";
 import axios from "axios";
-const store = useGeneratorStore();
 import { ref, watch, onMounted, nextTick } from 'vue';
 import './style.css';
+import TagComponent from './TagComponent.vue';
 
-const placeholderImage = ref("https://generated.vusercontent.net/placeholder.svg");
+const store = useGeneratorStore();
 const image = ref("https://generated.vusercontent.net/placeholder.svg");
 const tags = ref({
     "绘画工具": ['笔', '刷', '刀', '针', '炭'],
@@ -19,6 +19,7 @@ const tags = ref({
     "风格流派": ['浮世绘', '装饰艺术', '巴洛克风格', '当代艺术', '立体主义', '野兽派', '未来主义', '几何主义', '印象派', '装置艺术', '极简主义', '新印象派', '新古典主义', '现实主义', '文艺复兴', '浪漫主义', '实用主义', '达达主义', '表现主义', '抽象表现主义', '流行艺术', '后现代主义', '复古主义', '象形文字', '魔幻现实主义', '新表现主义', '野性派', '派拉洛士'],
     "光线投影": ['自然光', '人造光', '直射光', '散射光', '逆光', '侧光'] 
 });
+const tagComponent = ref(null);
 const caption = ref("");
 const session = ref("");
 const prompt = ref("Linux");
@@ -80,7 +81,7 @@ async function generate() {
             "data": {
                 "size": store.size,
                 "prompt": '图像主题：' + prompt.value + '。'
-                    + selectedTagsToString()
+                    + ((tagComponent.value) ? tagComponent.value.selectedTagsToString() : '') 
                     + (store.background !== '' ? ' 图片背景：' + store.background : ''),
                 "quality": store.quality,
                 "style": store.style
@@ -124,25 +125,6 @@ async function generate() {
         });
     }
 }
-// 点击标签后的操作
-const toggleTag = (category, tag) => {
-  if (!store.selectedTags[category]) store.selectedTags[category] = [];
-  const index = store.selectedTags[category].indexOf(tag);
-  if (index > -1) {
-    store.selectedTags[category].splice(index, 1);
-  } else {
-    store.selectedTags[category].push(tag);
-  }
-};
-const selectedTagsToString = () => {
-  let result = '';
-  for (let category in store.selectedTags) {
-    if (store.selectedTags[category].length > 0) {
-      result += category + '：' + store.selectedTags[category].join('，') + '；';
-    }
-  }
-  return result;
-}
 const onCopy = (event) => {
     event.trigger.classList.add('copy-fade');
     event.trigger.addEventListener('animationend', function callback() {
@@ -181,6 +163,14 @@ const downloadImage = (event) => {
 const switchTheme = () => {
     store.toggleTheme()
 }
+</script>
+
+<script>
+  export default {
+    components: {
+      TagComponent,
+    }
+  }
 </script>
 
 <template>
@@ -223,21 +213,7 @@ const switchTheme = () => {
                         </div>
                         <div class="mb-1">
                             <label class="form-label">图片属性</label>
-                            <div>
-                                <div class="mb-1"  v-for='(categoryTags, categoryName) in tags' :key='categoryName'>
-                                    <label class="form-label">{{ categoryName }} ：</label>
-                                    <div>
-                                        <div 
-                                        v-for='(tag, index) in categoryTags' 
-                                        :key='index' 
-                                        :class="{ 'selected-tag': store.selectedTags[categoryName] && store.selectedTags[categoryName].includes(tag) }" 
-                                        class='tag' 
-                                        @click='toggleTag(categoryName, tag)'>
-                                        {{ tag }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <TagComponent ref='tagComponent' :tags='tags' :selectedTags='store.selectedTags' />
                         </div>
                         <div class="mb-1">
                             <label class="form-label">图片背景</label><br />
