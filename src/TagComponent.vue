@@ -58,7 +58,8 @@ export default {
     min-width: 65px;
 }
 .tag {
-    border: 1px solid #CCC;
+    background-color: #CCC;
+    color: #333;
     border-radius: 4px;
     display: inline-block;
     margin: 4px;
@@ -69,10 +70,5 @@ export default {
 .selected-tag {
     background: #FF5722;
     color: #FFF;
-}
-.splitter {
-    border: none;
-    padding: 0;
-    width: 100%;
 }
 </style>

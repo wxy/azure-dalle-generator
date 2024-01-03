@@ -236,12 +236,14 @@ const switchTheme = () => {
                                 <label for="background_0">紫</label>
                             </fieldset>
                         </div>
-                        <button id="generateButton" class="btn btn-primary" @click="generate">生成图片</button>
+                        <div class="mb-1">
+                            <button id="generateButton" class="btn btn-primary" @click="generate">生成图片</button>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col">
-                <div class="card">
+                <div class="card mt-1">
                     <div class="card-body conf">
                         <h5 class="card-title">服务配置</h5>
                         <div class="mb-1">
@@ -259,7 +261,7 @@ const switchTheme = () => {
                             历史生成的图片（{{ pastImages.length }}）
                     </div>
                     <div class="card-body">
-                        <div class="image-scroll-list p-3">
+                        <div class="image-scroll-list p-1">
                             <div v-for="(pastImage, index) in pastImages" :key="index" class="image-list-item">
                                 <img :src="pastImage.url" class="thumbnail" @click="changeImage(pastImage.url, pastImage.caption, pastImage.session)">
                             </div>

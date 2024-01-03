@@ -66,6 +66,9 @@ body {
     min-width: 70px;
 }
 
+#generateButton {
+    margin: auto;
+}
 /* 动画反馈 */
 @keyframes fadeInOut {
     0%,100% { opacity: 1; }
@@ -108,8 +111,7 @@ body {
 }
 .image-list-item {
     display: inline-block;
-    margin: 10px;
-    background: #EEE;
+    margin: 2px;
     height: 80px;
     width: 80px;
     display: flex;
@@ -117,6 +119,8 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
 }
 .image-list-item:hover {
     background: #EEC;
