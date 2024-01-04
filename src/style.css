@@ -86,7 +86,7 @@ body {
     width: 100%;
 }
 .figure-img {
-    max-height: 500px;
+    max-height: 350px;
     max-width: 100%;
     cursor: pointer;
     padding: 0.25rem;
@@ -97,7 +97,7 @@ body {
 }
 .figure-caption{
     text-align: left;
-    max-height: 130px;
+    height: 175px;
     overflow: scroll;
 }
 .img-fade {
@@ -111,7 +111,7 @@ body {
 .image-scroll-list {
     overflow-x: auto;
     white-space: nowrap;
-    height: 132px;
+    height: 86px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
