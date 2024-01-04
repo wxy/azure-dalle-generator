@@ -87,10 +87,18 @@ body {
 }
 .figure-img {
     max-height: 500px;
+    max-width: 100%;
     cursor: pointer;
+    padding: 0.25rem;
+    background-color: var(--color-block);
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    height: auto;
 }
 .figure-caption{
     text-align: left;
+    max-height: 130px;
+    overflow: scroll;
 }
 .img-fade {
     animation: fadeInOut 2s infinite;
