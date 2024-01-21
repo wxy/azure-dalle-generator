@@ -32,9 +32,20 @@ export default {
     selectedTagsToString() {
         let result = '';
         for (let category in this.selectedTags) {
-        if (this.selectedTags[category].length > 0) {
-            result += category + '：' + this.selectedTags[category].join('，') + '；';
-        }
+            if (typeof this.tags[category] === 'undefined') {
+                if (this.selectedTags[category].length === 0) {
+                    delete this.selectedTags[category];
+                }
+            } else {
+                for (let tag of this.selectedTags[category]) {
+                    if (!this.tags[category].includes(tag)) {
+                        this.selectedTags[category] = this.selectedTags[category].filter(t => t !== tag);
+                    }
+                }
+                if (this.selectedTags[category].length > 0) {
+                    result += category + '：' + this.selectedTags[category].join('，') + '；';
+                }
+            }
         }
         return result;
     }
