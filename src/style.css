@@ -29,6 +29,7 @@ body {
     background-color: var(--color-background);
     color: var(--color-text);
     border: 1px solid var(--color-border);
+    flex: 1;
 }
 
 #theme-toggle-button {
@@ -47,6 +48,12 @@ body {
 }
 [data-theme='dark'] #moon-icon {
     display: inline-block;
+}
+
+.col {
+    display: flex;
+    flex-direction: column; 
+    justify-content: space-between;
 }
 
 /* 配置区 */

@@ -18,6 +18,7 @@ export const useGeneratorStore = defineStore('generator', {
     actions: {
         toggleTheme() {
             this.theme = this.theme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', this.theme);
         }
     },
 }, {
