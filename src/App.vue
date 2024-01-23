@@ -33,6 +33,7 @@ let btnElement = ref(null);
 onMounted(() => {
     imgElement.value = document.querySelector('.figure-img');
     btnElement.value = document.querySelector('#generateButton');
+    document.documentElement.setAttribute('data-theme', store.theme);
 })
 watch(() => store.theme, (newTheme) => {
     document.documentElement.setAttribute('data-theme', newTheme);
@@ -177,6 +178,19 @@ const switchTheme = () => {
             <div class="col">
                 <div class="card mt-1">
                     <div class="card-body conf">
+                        <h5 class="card-title">服务配置</h5>
+                        <div class="mb-1">
+                            <label class="form-label">API Endpoint</label>
+                            <input type="text" v-model="store.url" class="form-control" placeholder="API Endpoint">
+                        </div>
+                        <div class="mb-1">
+                            <label class="form-label">API Key</label>
+                            <input type="text" v-model="store.key" class="form-control" placeholder="API Endpoint">
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-1">
+                    <div class="card-body conf">
                         <h5 class="card-title">图片配置</h5>
                         <div class="mb-1">
                             <label class="form-label">图片尺寸</label>
@@ -239,19 +253,6 @@ const switchTheme = () => {
                 </div>
             </div>
             <div class="col">
-                <div class="card mt-1">
-                    <div class="card-body conf">
-                        <h5 class="card-title">服务配置</h5>
-                        <div class="mb-1">
-                            <label class="form-label">API Endpoint</label>
-                            <input type="text" v-model="store.url" class="form-control" placeholder="API Endpoint">
-                        </div>
-                        <div class="mb-1">
-                            <label class="form-label">API Key</label>
-                            <input type="text" v-model="store.key" class="form-control" placeholder="API Endpoint">
-                        </div>
-                    </div>
-                </div>
                 <div class="card mt-1 image-history">
                     <div class="card-header">
                             历史生成的图片（{{ pastImages.length }}）
